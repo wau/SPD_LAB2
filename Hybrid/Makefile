@@ -21,7 +21,7 @@ tests: dtw_hybrid
 	for file in $(FILES); do \
     	echo "Running test with $$file"; \
     	#mpirun --use-hwthread-cpus -np $(NUM_PROCESSES) ./dtw_hybrid $$file $$file; \
-		mpirun -np $(NUM_PROCESSES) ./dtw_mpi $$file $$file; \
+		mpirun -np $(NUM_PROCESSES) ./dtw_hybrid $$file $$file; \
 		echo ""; \
 	done
 

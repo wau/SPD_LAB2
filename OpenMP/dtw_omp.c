@@ -5,7 +5,7 @@
 #include <omp.h>
 
 #define THREADS 4
-#define MAX_SIZE 40005
+#define MAX_SIZE 200000
 
 
 void print_arr(const int *a, int n) {
@@ -85,10 +85,9 @@ void files_input(char *file1, char *file2) {
     //printf("%s\n", file2);
 
 
-    //int *arr1 = (int*)malloc(MAX_SIZE * sizeof(int));
-    //int *arr2 = (int*)malloc(MAX_SIZE * sizeof(int));
-    int arr1[MAX_SIZE];
-    int arr2[MAX_SIZE];
+    int *arr1 = (int*)malloc(MAX_SIZE * sizeof(int));
+    int *arr2 = (int*)malloc(MAX_SIZE * sizeof(int));
+    
 
 
     int size1 = read_arr_from_file(file1, arr1);

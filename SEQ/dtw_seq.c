@@ -62,7 +62,7 @@ int DTW(int a[], int size_a, int b[], int size_b) {
     return DTW[size_a][size_b];
 }
 
-#define MAX_SIZE 40000
+#define MAX_SIZE 200000
 void files_input(char *file1, char *file2) {
 
 //    p_array = (int *)malloc(sizeof(int)*50);      // allocate 50 ints
