@@ -86,8 +86,8 @@ int dtw(int a[], int size_a, int b[], int size_b, int number_tasks, int rank){
         for(int i = 1; i < rows; i++){
             MPI_Recv(&msg, 1, MPI_INT, from, 1, MPI_COMM_WORLD, &Stat);
 
-            #pragma omp parallel for
             dtw_current[i][0] = msg;
+            #pragma omp parallel for
             for(int j = 1; j < cols; j++) {
                 int cost = abs(a[i-1] - b[start_b + j-1]);
                 dtw_current[i][j] = cost + imin(dtw_previous[i-1][j-1],dtw_previous[i-1][j],dtw_current[i][j-1]);

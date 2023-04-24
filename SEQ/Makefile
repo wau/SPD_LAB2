@@ -10,7 +10,7 @@ all: dtw_seq
 run: tests
 .PHONY: run
 
-FILES=tests/5k.txt tests/10k.txt tests/20k.txt tests/40k.txt tests/80k.txt tests/100k.txt tests/120k.txt tests/140k.txt
+FILES=tests/10k.txt tests/20k.txt tests/30k.txt tests/40k.txt tests/50k.txt
 
 clean:
 	rm -f dtw_seq *.o
