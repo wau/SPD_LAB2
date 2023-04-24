@@ -1,0 +1,14 @@
+for file in tests/5k.txt tests/10k.txt tests/20k.txt tests/40k.txt tests/80k.txt tests/100k.txt tests/120k.txt tests/140k.txt; do \
+    	echo "Running test with $file"; \
+    	mpirun --use-hwthread-cpus -np 4 ./dtw_hybrid $file $file; \
+		echo ""; \
+	done
+Running test with tests/5k.txt
+DTW distance = 0
+Working time: 0.529606
+
+Running test with tests/10k.txt
+DTW distance = 0
+Working time: 2.165879
+
+Running test with tests/20k.txt

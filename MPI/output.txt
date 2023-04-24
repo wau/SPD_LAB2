@@ -1,0 +1,23 @@
+mpicc  dtw_mpi.c -o dtw_mpi -lm -lmpi
+for file in tests/5k.txt tests/10k.txt tests/20k.txt tests/40k.txt tests/80k.txt tests/100k.txt tests/120k.txt tests/140k.txt tests/160k.txt tests/180k.txt tests/200k.txt; do \
+    	echo "Running test with $file"; \
+    	mpirun --use-hwthread-cpus -np 4 ./dtw_mpi $file $file; \
+		echo ""; \
+	done
+Running test with tests/5k.txt
+DTW distance = 0
+Working time: 1.196455
+
+Running test with tests/10k.txt
+DTW distance = 0
+Working time: 3.092485
+
+Running test with tests/20k.txt
+DTW distance = 0
+Working time: 13.185119
+
+Running test with tests/40k.txt
+DTW distance = 0
+Working time: 50.543022
+
+Running test with tests/80k.txt
