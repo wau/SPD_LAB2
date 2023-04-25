@@ -20,8 +20,13 @@ clean:
 tests: dtw_mpi
 	for file in $(FILES); do \
     	echo "Running test with $$file"; \
-    	# mpirun --use-hwthread-cpus -np $(NUM_PROCESSES) ./dtw_mpi $$file $$file; \
-		mpirun -np $(NUM_PROCESSES) ./dtw_mpi $$file $$file; \
+    	mpirun --use-hwthread-cpus -np $(NUM_PROCESSES) ./dtw_mpi $$file $$file; \
+		echo ""; \
+	done
+
+single: dtw_mpi
+    echo "Running test with 10k.txt; \
+    	mpirun --use-hwthread-cpus -np $(NUM_PROCESSES) ./dtw_mpi tests/10k.txt tests/10k.txt; \
 		echo ""; \
 	done
 

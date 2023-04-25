@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
-#include <omp.h>
 #include "mpi.h"
 #define MAX_SIZE 150000
 
@@ -31,13 +30,13 @@ int imin(int x, int y, int z){
     else return z;
 }
 
-int dtw(int a[], int size_a, int b[], int size_b, int number_tasks, int rank, int num_threads){
+int dtw(int a[], int size_a, int b[], int size_b, int number_tasks, int rank){
 
-    int from = rank-1;
+    int from = rank-1; 
     int to = rank+1;
 
     int msg = -1;
-
+    
     MPI_Status Stat;
 
     int start_b = (size_b/number_tasks)*rank;
@@ -46,15 +45,31 @@ int dtw(int a[], int size_a, int b[], int size_b, int number_tasks, int rank, in
     int chunks = size_b/number_tasks;
 
     if (lastrank) chunks += size_b % number_tasks;
-    int cols = 1 + chunks;
+    int cols = 1 + chunks; 
     int rows = 1 + size_a;
-
+    
     //allocate dtw matrixes
     int **dtw_current = (int **)malloc(rows * sizeof(int *));
+    if (dtw_current == NULL) {
+        printf("Error: Failed to allocate memory for dtw_current.\n");
+        exit(EXIT_FAILURE);
+    }
     int **dtw_previous = (int **)malloc(rows * sizeof(int *));
+    if (dtw_previous == NULL) {
+        printf("Error: Failed to allocate memory for dtw_current.\n");
+        exit(EXIT_FAILURE);
+    }
     for(int i=0; i<rows; i++) {
         dtw_current[i] = (int *)malloc(cols * sizeof(int));
+        if (dtw_current[i] == NULL) {
+            printf("Error: Failed to allocate memory for dtw_current.\n");
+            exit(EXIT_FAILURE);
+        }
         dtw_previous[i] = (int *)malloc(cols * sizeof(int));
+        if (dtw_previous[i] == NULL) {
+            printf("Error: Failed to allocate memory for dtw_current.\n");
+            exit(EXIT_FAILURE);
+        }
     }
 
     // Initialize done matrix with infinity
@@ -69,7 +84,8 @@ int dtw(int a[], int size_a, int b[], int size_b, int number_tasks, int rank, in
         //calculate the cost matrix
         for(int i = 1; i < rows; i++){
             dtw_current[i][0] = INT_MAX;
-            #pragma omp parallel for num_threads(num_threads) 
+
+            #pragma omp parallel for num_threads(num_threads)
             for(int j = 1; j < cols; j++) {
                 int cost = abs(a[i-1] - b[start_b + j-1]);
                 dtw_current[i][j] = cost + imin(dtw_previous[i-1][j-1],dtw_previous[i-1][j],dtw_current[i][j-1]);
@@ -91,8 +107,8 @@ int dtw(int a[], int size_a, int b[], int size_b, int number_tasks, int rank, in
                 int cost = abs(a[i-1] - b[start_b + j-1]);
                 dtw_current[i][j] = cost + imin(dtw_previous[i-1][j-1],dtw_previous[i-1][j],dtw_current[i][j-1]);
             }
-
-            if (!lastrank) MPI_Send(&dtw_current[i][cols-1], 1, MPI_INT, to, 1, MPI_COMM_WORLD);
+        
+            if (!lastrank) MPI_Send(&dtw_current[i][cols-1], 1, MPI_INT, to, 1, MPI_COMM_WORLD);        
             //swap
             int **temp = dtw_current;
             dtw_current = dtw_previous;
@@ -114,7 +130,9 @@ int dtw(int a[], int size_a, int b[], int size_b, int number_tasks, int rank, in
 
     MPI_Finalize();
     exit(0);
+    //return -1;
 }
+
 
 int main(int argc,char **argv){
 
@@ -124,7 +142,8 @@ int main(int argc,char **argv){
     int size_a = read_arr_from_file(argv[1], a);
     int size_b = read_arr_from_file(argv[2], b);
 
-    //swap arrays
+
+//swap arrays
     if(size_a > size_b){
         int tmp1 = size_a;
         size_a = size_b;
@@ -139,21 +158,20 @@ int main(int argc,char **argv){
 
     MPI_Comm_rank(MPI_COMM_WORLD, &rank); //number of current task
     MPI_Comm_size(MPI_COMM_WORLD, &size); //number of tasks/jobs
-
+    
     if( size < 2){
         if(rank == 0)
           printf("Error: you should use at least 2 tasks");
         exit(1);
     }
-
-    int num_threads = atoi(argv[3]);
-
+    
     double start = MPI_Wtime();
-    int _dtw = dtw(a , size_a, b, size_b, size, rank, num_threads);
+    int _dtw = dtw(a , size_a, b, size_b, size, rank);
     double end = MPI_Wtime();
     double time_spent = (double)(end - start);
     printf("DTW distance = %d\n", _dtw);
     printf("Working time: %lf\n", time_spent);
+
 
     MPI_Finalize();
 }
